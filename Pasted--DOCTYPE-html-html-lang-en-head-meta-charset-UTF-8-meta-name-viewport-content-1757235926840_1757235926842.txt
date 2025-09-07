@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart - AI Crop Recommendations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5282;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #2c5282;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #2c5282;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 6rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(240, 147, 251, 0.6);
+        }
+
+        .features {
+            background: white;
+            padding: 6rem 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2d3748;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .crop-recommendation {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            padding: 6rem 0;
+        }
+
+        .recommendation-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .recommendation-result {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .recommendation-result h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .crop-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .crop-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-card .crop-name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .crop-card .profit-score {
+            color: #38a169;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .dashboard {
+            background: #f7fafc;
+            padding: 6rem 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .weather-info, .market-prices, .alerts {
+            margin-bottom: 1rem;
+        }
+
+        .price-item, .alert-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .price-up { color: #38a169; }
+        .price-down { color: #e53e3e; }
+        .alert-high { color: #dd6b20; }
+        .alert-medium { color: #3182ce; }
+
+        .chat-support {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .tech-stack {
+            background: #1a202c;
+            color: white;
+            padding: 4rem 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(200, 230, 201, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: rgba(200, 230, 201, 0.3);
+            transform: translateY(-5px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .form-grid { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">🌾 AgriSmart</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#recommend">Get Recommendations</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#tech">Technology</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>AI-Powered Crop Recommendations</h1>
+            <p>Maximize your farm profits with intelligent crop suggestions based on soil data, weather patterns, and market trends</p>
+            <a href="#recommend" class="cta-button">Get Smart Recommendations</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Revolutionary Farming Solutions</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🌱</span>
+                    <h3>Smart Crop Selection</h3>
+                    <p>AI analyzes soil composition, weather patterns, and market data to recommend the most profitable crops for your specific location and conditions.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🌤</span>
+                    <h3>Weather Forecasting</h3>
+                    <p>Advanced weather predictions help you plan planting, irrigation, and harvesting schedules for optimal crop growth and yield.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">💰</span>
+                    <h3>Market Price Alerts</h3>
+                    <p>Real-time market prices and trend analysis help you sell at the right time and avoid middlemen for maximum profit.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔬</span>
+                    <h3>Disease Detection</h3>
+                    <p>Computer vision technology identifies crop diseases early, providing treatment recommendations to protect your investment.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Yield Prediction</h3>
+                    <p>Machine learning models predict expected yields based on historical data, current conditions, and farming practices.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🏛</span>
+                    <h3>Subsidy Alerts</h3>
+                    <p>Stay updated on government subsidies and agricultural schemes relevant to your crops and region.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="recommend" class="crop-recommendation">
+        <div class="container">
+            <div class="recommendation-form">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #2d3748;">Get Your Personalized Crop Recommendations</h2>
+                <form id="cropForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" placeholder="Enter your city/district" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="soilType">Soil Type</label>
+                            <select id="soilType" name="soilType" required>
+                                <option value="">Select Soil Type</option>
+                                <option value="clay">Clay</option>
+                                <option value="sandy">Sandy</option>
+                                <option value="loam">Loam</option>
+                                <option value="silt">Silt</option>
+                                <option value="black">Black Cotton</option>
+                                <option value="red">Red Soil</option>
+                                <option value="alluvial">Alluvial</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="season">Season</label>
+                            <select id="season" name="season" required>
+                                <option value="">Select Season</option>
+                                <option value="kharif">Kharif (Monsoon)</option>
+                                <option value="rabi">Rabi (Winter)</option>
+                                <option value="zaid">Zaid (Summer)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="farmSize">Farm Size (acres)</label>
+                            <input type="number" id="farmSize" name="farmSize" placeholder="Enter farm size" min="0.1" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rainfall">Annual Rainfall (mm)</label>
+                            <input type="number" id="rainfall" name="rainfall" placeholder="Average annual rainfall" min="100" max="3000">
+                        </div>
+                        <div class="form-group">
+                            <label for="budget">Budget (₹)</label>
+                            <input type="number" id="budget" name="budget" placeholder="Investment budget" min="1000">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Generate AI Recommendations</button>
+                </form>
+
+                <div id="recommendationResult" class="recommendation-result">
+                    <h3>🎯 Recommended Crops for Your Farm</h3>
+                    <p>Based on your inputs, here are the most suitable and profitable crops:</p>
+                    <div class="crop-suggestions" id="cropSuggestions">
+                        <!-- Dynamic crop recommendations will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #2d3748;">Farmer Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>🌦 Weather Forecast</h3>
+                    <div class="weather-info">
+                        <p><strong>Today:</strong> 28°C, Partly Cloudy</p>
+                        <p><strong>Tomorrow:</strong> 26°C, Light Rain Expected</p>
+                        <p><strong>This Week:</strong> 60% chance of rain</p>
+                        <p><strong>Recommendation:</strong> Good time for sowing rice</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>💹 Market Prices (per quintal)</h3>
+                    <div class="market-prices">
+                        <div class="price-item">
+                            <span>Wheat</span>
+                            <span class="price-up">₹2,150 ↗</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Rice</span>
+                            <span class="price-up">₹1,890 ↗</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Sugarcane</span>
+                            <span class="price-down">₹340 ↘</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Cotton</span>
+                            <span class="price-up">₹6,200 ↗</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>🚨 Alerts & Notifications</h3>
+                    <div class="alerts">
+                        <div class="alert-item">
+                            <span>Disease Alert</span>
+                            <span class="alert-high">High Risk</span>
+                        </div>
+                        <div class="alert-item">
+                            <span>Subsidy Available</span>
+                            <span class="alert-medium">Apply Now</span>
+                        </div>
+                        <div class="alert-item">
+                            <span>Best Selling Time</span>
+                            <span class="alert-medium">Next Week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📈 Yield Predictions</h3>
+                    <div class="weather-info">
+                        <p><strong>Wheat:</strong> 45 quintals/acre (Expected)</p>
+                        <p><strong>Rice:</strong> 52 quintals/acre (Expected)</p>
+                        <p><strong>Confidence:</strong> 87% accuracy</p>
+                        <p><strong>Based on:</strong> Historical data + Current conditions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech" class="tech-stack">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🚀 Cutting-Edge Technology Stack</h2>
+            <p style="text-align: center; margin-bottom: 2rem; opacity: 0.9;">Powered by advanced AI, ML, and modern web technologies</p>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h3>🐍 Python</h3>
+                    <p>Core programming language for AI models and data processing</p>
+                </div>
+                <div class="tech-item">
+                    <h3>🧠 TensorFlow</h3>
+                    <p>Deep learning framework for crop disease detection and yield prediction</p>
+                </div>
+                <div class="tech-item">
+                    <h3>📊 scikit-learn</h3>
+                    <p>Machine learning library for crop recommendation algorithms</p>
+                </div>
+                <div class="tech-item">
+                    <h3>📈 Pandas & NumPy</h3>
+                    <p>Data manipulation and numerical computing for soil and weather analysis</p>
+                </div>
+                <div class="tech-item">
+                    <h3>☁ Cloud Computing</h3>
+                    <p>AWS/GCP/Azure for scalable deployment and GPU acceleration</p>
+                </div>
+                <div class="tech-item">
+                    <h3>📱 Mobile-First</h3>
+                    <p>Progressive web app with future native mobile app support</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="chat-support">
+        <button class="chat-button" onclick="toggleChat()" title="Chat Support">💬</button>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 AgriSmart - Revolutionizing Agriculture with AI</p>
+            <p style="margin-top: 1rem; opacity: 0.8;">
+                Future roadmap: Mobile app, voice support, offline access for low-connectivity areas
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Crop recommendation logic
+        const cropDatabase = {
+            clay: {
+                kharif: [
+                    {name: 'Rice', profit: 92, details: 'High water retention, excellent for monsoon'},
+                    {name: 'Sugarcane', profit: 88, details: 'Long-term crop with good returns'},
+                    {name: 'Cotton', profit: 85, details: 'Clay soil provides good root development'}
+                ],
+                rabi: [
+                    {name: 'Wheat', profit: 90, details: 'Clay soil retains moisture well for wheat'},
+                    {name: 'Gram', profit: 82, details: 'Good protein crop for clay soil'},
+                    {name: 'Mustard', profit: 78, details: 'Oil seed crop suitable for clay'}
+                ],
+                zaid: [
+                    {name: 'Fodder Maize', profit: 75, details: 'Good summer crop with irrigation'},
+                    {name: 'Watermelon', profit: 85, details: 'High value summer crop'}
+                ]
+            },
+            sandy: {
+                kharif: [
+                    {name: 'Millet', profit: 88, details: 'Drought resistant, ideal for sandy soil'},
+                    {name: 'Groundnut', profit: 92, details: 'Excellent drainage in sandy soil'},
+                    {name: 'Sorghum', profit: 85, details: 'Well-suited for sandy conditions'}
+                ],
+                rabi: [
+                    {name: 'Barley', profit: 83, details: 'Tolerates sandy soil conditions well'},
+                    {name: 'Cumin', profit: 90, details: 'High-value spice crop for sandy soil'},
+                    {name: 'Fennel', profit: 87, details: 'Aromatic crop with good market demand'}
+                ],
+                zaid: [
+                    {name: 'Sesame', profit: 89, details: 'Oil seed crop perfect for summer'},
+                    {name: 'Cucumber', profit: 82, details: 'Quick growing summer vegetable'}
+                ]
+            },
+            loam: {
+                kharif: [
+                    {name: 'Maize', profit: 90, details: 'Most versatile soil for maize cultivation'},
+                    {name: 'Soybean', profit: 93, details: 'High protein crop with excellent returns'},
+                    {name: 'Rice', profit: 88, details: 'Balanced soil perfect for rice'}
+                ],
+                rabi: [
+                    {name: 'Wheat', profit: 94, details: 'Ideal soil type for maximum wheat yield'},
+                    {name: 'Peas', profit: 87, details: 'Legume crop enriches soil nitrogen'},
+                    {name: 'Potato', profit: 91, details: 'High-value vegetable crop'}
+                ],
+                zaid: [
+                    {name: 'Tomato', profit: 95, details: 'Premium vegetable with high market value'},
+                    {name: 'Chilli', profit: 89, details: 'Spice crop with consistent demand'}
+                ]
+            },
+            black: {
+                kharif: [
+                    {name: 'Cotton', profit: 95, details: 'Black cotton soil is ideal for cotton'},
+                    {name: 'Sorghum', profit: 88, details: 'Traditional crop for black soil regions'},
+                    {name: 'Sugarcane', profit: 90, details: 'Long duration crop with good returns'}
+                ],
+                rabi: [
+                    {name: 'Wheat', profit: 85, details: 'Good yield in black soil with irrigation'},
+                    {name: 'Gram', profit: 92, details: 'Pulse crop well-suited for black soil'},
+                    {name: 'Safflower', profit: 84, details: 'Oil seed crop for black cotton soil'}
+                ],
+                zaid: [
+                    {name: 'Sunflower', profit: 87, details: 'Oil seed crop for summer season'},
+                    {name: 'Green Gram', profit: 83, details: 'Quick maturing pulse crop'}
+                ]
+            }
+        };
+
+        document.getElementById('cropForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const soilType = document.getElementById('soilType').value;
+            const season = document.getElementById('season').value;
+            const location = document.getElementById('location').value;
+            const farmSize = document.getElementById('farmSize').value;
+            const budget = document.getElementById('budget').value;
+            
+            if (!soilType || !season) {
+                alert('Please select both soil type and season');
+                return;
+            }
+            
+            // Get crop recommendations
+            const recommendations = cropDatabase[soilType] && cropDatabase[soilType][season] 
+                ? cropDatabase[soilType][season] 
+                : [
+                    {name: 'Mixed Farming', profit: 80, details: 'Diversified approach recommended'},
+                    {name: 'Consultation Needed', profit: 75, details: 'Contact agricultural expert'}
+                ];
+            
+            // Display recommendations
+            displayRecommendations(recommendations, location, farmSize, budget);
+        });
+
+        function displayRecommendations(crops, location, farmSize, budget) {
+            const resultDiv = document.getElementById('recommendationResult');
+            const suggestionsDiv = document.getElementById('cropSuggestions');
+            
+            suggestionsDiv.innerHTML = '';
+            
+            crops.forEach(crop => {
+                const cropCard = document.createElement('div');
+                cropCard.className = 'crop-card';
+                cropCard.innerHTML = `
+                    <div class="crop-name">${crop.name}</div>
+                    <div class="profit-score">Profit Score: ${crop.profit}%</div>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #666;">${crop.details}</p>
+                `;
+                suggestionsDiv.appendChild(cropCard);
+            });
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Chat support function
+        function toggleChat() {
+            alert('🤖 AI Chat Support\n\nHello! I\'m your AI farming assistant. How can I help you today?\n\n• Crop recommendations\n• Disease identification\n• Market price queries\n• Weather updates\n• Subsidy information\n\n[This would open a real chat interface in the full implementation]');
+        }
+
+        // Dynamic content updates (simulate
